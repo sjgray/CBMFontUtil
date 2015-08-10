@@ -1,0 +1,21 @@
+; ColourPET+G Font EPROM by Steve Gray
+; ----------------------
+; Creates a 16-set EPROM including BOLD, UNDERLINE, ROTATED, WIDE, TALL, and DOUBLE size fonts
+; Also inlcudes SuperPET and German font sets
+;
+fontcolourpet.bin
+fontcolourpet-bold.bin
+fontcolourpet-u8.bin
+font-superpet.bin
+font-german.bin
+fontcolourpet-rotate90.bin
+fontcolourpet-rotate180.bin
+fontcolourpet-rotate270.bin
+fontcolourpet-wide-L.bin
+fontcolourpet-wide-R.bin
+fontcolourpet-tall-T.bin
+fontcolourpet-tall-B.bin
+fontcolourpet-double1.bin
+fontcolourpet-double2.bin
+fontcolourpet-double3.bin
+fontcolourpet-double4.bin
