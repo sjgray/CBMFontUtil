@@ -13,7 +13,7 @@ Commodore PET fonts (or should I say character sets) contain 128 symbols, with e
 using an 8x8 pixel matrix and therefor using 8 bytes to define one symbol. The PET generates
 "reverse" characters (codes 128-256) via a hardware circuit thus saving on ROM size.
 
-The Commodore CBM-II was a follup to the PET with two models and is also supported in a limited
+The Commodore CBM-II was a followup to the PET with two models and is also supported in a limited
 way. The Hi-Profile version used an 8x16 matrix (with 14 rows visible) and the Lo-Profile
 version had 8 rows visible. I must note that I am considering allowing the ColourPET+G to
 use 8x16 fonts and so this utility was also written with that in mind.
@@ -142,7 +142,7 @@ These are the operations available from the drop-down menu:
 ColourPET+G Font Usage
 ----------------------
 
-ColourPET+G is currently in early planning stages. It is a follup to my ColourPET project.
+ColourPET+G is currently in early planning stages. It is a followup to my ColourPET project.
 It is planned that 4 bits from the character colour be configurable as font selection bits.
 This would allow up to 16 font sets. For compatibility reasons, one "Font Set" contains 4
 individual fonts. Printing CHR$(14) or CHR$(142) allows selection of standard "text" or
