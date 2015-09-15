@@ -1,7 +1,19 @@
-; ColourPET+G Font EPROM by Steve Gray
-; ----------------------
-; Creates a 16-set EPROM including BOLD, UNDERLINE, ROTATED, WIDE, TALL, and DOUBLE size fonts
-; Also inlcudes SuperPET and German font sets
+; ColourPET+G Font EPROM #1 - by Steve Gray
+; =========================
+; This file is used to create an EPROM binary file for use with ColourPET+G.
+;
+; A PET font is 128 characters. The upper 128 "reversed" characters are not stored in the font
+; but are produced by inverting pixels using hardware. Each character is 8x8 pixels, and so
+; requires 8 bytes per character. One font takes 128x8 = 1KB.
+;
+; The PET supports a maximum of 4 fonts in its FONT ROM (although most models only had 2).
+; Four FONTS are called a FONT SET and contains:
+;   Text, Graphics, Alt-Text, Alt-Graphics
+;
+; The ColourPET+G can have up to 16 FONT SETS in it's EPROM. The following are included:
+;
+;   Normal, Bold, Underlined, Rotated-90/180/270, Wide-Left/Right, Tall-Top/Bottom,
+;   Double-Size (4 quadrants), SuperPET, and German DIN
 ;
 fontcolourpet.bin
 fontcolourpet-bold.bin
