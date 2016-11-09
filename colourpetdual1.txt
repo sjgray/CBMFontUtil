@@ -1,0 +1,105 @@
+; ColourPET/dual font EPROM #1 - by Steve Gray
+; ============================ NOTE: This is a first draft for testing purposes
+;
+; This file is used to create an EPROM binary file for use with ColourPET/dual
+;
+; A PET font is 128 characters. The upper 128 "reversed" characters are not stored in the font
+; but are produced by inverting pixels using hardware. Each character is 8x8 pixels, and so
+; requires 8 bytes per character. One font takes 128x8 = 1KB.
+;
+; The ColourPET/dual has an eprom with two purposes:
+; 1. Act as a delay for colour data, in order to sync with character data
+; 2. As a font rom for the optional secondary video feature.
+;
+; The secondary screen differs from the normal PET screen in that it does not generate
+; reverse characters via hardware. The character set must include ALL 256 characters
+; for each font. You can choose to have "reverse" characters or any other character
+; or symbol in the upper half.
+;
+; The current ColourPET/dual design takes a 64K eprom (27512) and each font takes 2K,
+; so it will hold 1 "delay font" plus 31 256-character fonts.
+; If we connect the font headers to the same control pins as the normal character set
+; and include a complete font-set (4 sets) then we can select alternate sets the same way.
+; That gives 1 delay-set, plus 7 selectable sets (selected via 3 switches).
+;
+; Each FONTSET must be 8K (256 chrs x 8 bytes x 4 fonts)
+;
+; Filename Conventions:
+;
+; FONT128-xxxx.bin     - Font containing 1 set of 128 characters (PET standard)
+; FONT256-xxxx.bin     - Font containing 1 set of 256 characters (may include rvs set)
+; FONTPAIRnnn-xxxx.bin - Font containing 2 sets of nnn characters
+; FONTSETnnn-xxxx.bin  - Font containing 4 sets of nnn characters
+;--------------------------------------------------------------------------------------------------------------
+;
+;[FONTSET 1]----- Delay (2K x 4)
+;
+font256-colourpet-delay.bin
+font256-colourpet-delay.bin
+font256-colourpet-delay.bin
+font256-colourpet-delay.bin
+;
+;[FONTSET 2]----- standard pet font expanded to 256 characters (2 sets) + two different full cell semi-graphic
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8-2x4.bin
+font256-semi8-4x2.bin
+;
+;[FONTSET 3]----- standard pet font expanded to 256 characters (2 sets) + two different half-cell semi-graphic
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+;[FONTSET 4]----- 
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+;[FONTSET 5]----- 
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+;[FONTSET 6]----- 
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+;[FONTSET 7]----- 
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+;[FONTSET 8]----- 
+;
+font128-901447-08-set1.bin
+font128-901447-08-set1-rvs.bin
+font128-901447-08-set2.bin
+font128-901447-08-set2-rvs.bin
+font256-semi8h-4x2bot.bin
+font256-semi8h-4x2top.bin
+;
+
