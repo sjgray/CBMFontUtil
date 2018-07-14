@@ -1,7 +1,7 @@
 VERSION 5.00
-Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "comdlg32.ocx"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "Comdlg32.ocx"
 Begin VB.Form frmCBMfnt 
-   Caption         =   "CBM Font Utility"
+   Caption         =   "CBM Font Utility V1.1"
    ClientHeight    =   3090
    ClientLeft      =   4455
    ClientTop       =   3585
@@ -9,17 +9,25 @@ Begin VB.Form frmCBMfnt
    LinkTopic       =   "Form1"
    ScaleHeight     =   3090
    ScaleWidth      =   9000
+   Begin VB.CheckBox cbSplitTxt 
+      Caption         =   "Create TXT file with filenames from Split Operation"
+      Height          =   465
+      Left            =   5850
+      TabIndex        =   16
+      Top             =   1170
+      Width           =   2925
+   End
    Begin VB.TextBox txtOptVal 
       Height          =   285
       Left            =   4560
       TabIndex        =   13
       Text            =   "0"
       ToolTipText     =   "Operation-specifiic option value"
-      Top             =   1200
+      Top             =   1170
       Width           =   975
    End
    Begin VB.OptionButton optSize 
-      Caption         =   "8x16 pixel font"
+      Caption         =   "8 x 16 pixel font"
       Height          =   255
       Index           =   1
       Left            =   1200
@@ -28,7 +36,7 @@ Begin VB.Form frmCBMfnt
       Width           =   1695
    End
    Begin VB.OptionButton optSize 
-      Caption         =   "8x8 pixel font"
+      Caption         =   "8 x 8  pixel font"
       Height          =   255
       Index           =   0
       Left            =   1200
@@ -57,11 +65,11 @@ Begin VB.Form frmCBMfnt
       Height          =   315
       ItemData        =   "frmCBMfnt.frx":0000
       Left            =   1200
-      List            =   "frmCBMfnt.frx":004F
+      List            =   "frmCBMfnt.frx":0058
       Style           =   2  'Dropdown List
       TabIndex        =   7
       Top             =   720
-      Width           =   6975
+      Width           =   7545
    End
    Begin VB.TextBox txtOut 
       Height          =   375
@@ -173,17 +181,17 @@ Dim Tran(255)
 Dim CB(15)
 
 Private Sub cmdAbout_Click()
-    MsgBox "CBM Font Utility, V1.0 - Aug 9/15, (C)2015 Steve J. Gray"
+    MsgBox "CBM Font Utility, V1.1 - July 13/18, (C)2015-2018 Steve J. Gray"
 End Sub
 
 Private Sub Form_Load()
     cboOp.ListIndex = 0
-    Stat "Ready. CBM FontUtil (C)2015 Steve J. Gray"
+    Stat "Ready. CBM FontUtil (C)2018 Steve J. Gray"
 End Sub
 
 Private Sub cmdGo_Click()
     Dim Choice As Integer, FLen As Double, FIO As Integer, FIO2 As Integer, FIO3 As Integer
-    Dim SrcFile As String, DstFile As String
+    Dim SrcFile As String, DstFile As String, TxtFile As String
     
     Dim CMat(15) As String * 1                                  'array for one character
     Dim Tr(15) As Integer                                       'translation array
@@ -200,6 +208,7 @@ Private Sub cmdGo_Click()
     
     Dim BChr As String * 1, Tmp As String, BChr2 As String * 1  'buffers for data
     Dim Nul As String
+    Dim NumBytes As Integer
     
     Nul = Chr(0)                                                'Null character
     
@@ -208,7 +217,9 @@ Private Sub cmdGo_Click()
     '------------------------ Check input fields
     SrcFile = txtSrc.Text
     DstFile = txtOut.Text
-    OptVal = Val(txtOptVal.Text)
+    TxtFile = SrcFile & ".txt"
+    
+    OptVal = Val(txtOptVal.Text)                                'User-entered option for specific operation
         
     If optSize(0).Value = True Then OptCSize = 8 Else OptCSize = 16
     
@@ -238,49 +249,62 @@ Private Sub cmdGo_Click()
                 MsgBox "File appears to have 2-byte load address. These bytes will be stripped!"
                 Tmp = Input(2, FIO) 'skip them
             Else
-                MsgBox "Source file must be a multiple of 1024 bytes!"
-                Close FIO
-                Exit Sub
+                If Choice <> 7 Then
+                    MsgBox "Source file must be a multiple of 1024 bytes!"  'Unless processing non-cbm font
+                    Close FIO
+                    Exit Sub
+                End If
             End If
         End If
     End If
     
     '------------------------ Open the output file
-    If (Choice = 0) Or (Choice > 3) Then
+    If (Choice = 0) Or (Choice > 5) Then
+        '-- Normal Operation (one input file, one output file)
         FIO2 = FreeFile
         If Overwrite(DstFile) = False Then Exit Sub
     
         Open DstFile For Output As FIO2
+    Else
+        '-- Split File option selected (input file, multiple output files, and optional txt file)
+        If cbSplitTxt.Value = vbChecked Then
+            FIO2 = FreeFile
+            If Overwrite(TxtFile) = False Then Exit Sub
+            Open TxtFile For Output As FIO2
+        End If
     End If
     
     '------------------------ Do the requested operation
     Select Case Choice
         Case 0: GoSub CombineFiles      'Combine Fonts or Sets using list file (.txt)
-        Case 1: GoSub SplitFonts        'x Split to Individual Fonts
-        Case 2: GoSub SplitFontPairs    'x Split to Font Pair(s)
-        Case 3: GoSub SplitFontSet      'x Split to Font Set(s)
+        Case 1: T = 1:   GoSub DoSplitting  'Split to Characters       (  1 character)
+        Case 2: T = 32:  GoSub DoSplitting  'Split to Sub Fonts        ( 32 characters)
+        Case 3: T = 128: GoSub DoSplitting  'Split to Individual Fonts (128 characters)
+        Case 4: T = 256: GoSub DoSplitting  'Split to Font Pair(s)     (256 characters)
+        Case 5: T = 512: GoSub DoSplitting  'Split to Font Set(s)      (512 characters)
         
-        Case 4: GoSub ExpandFont    'Expand to 8x16 pixels
-        Case 5: GoSub StretchFont   'Stretch font to 8x16
-        Case 6: GoSub CompactFont   'Compact 8x16 font to 8x8 pixels
-        Case 7: GoSub SquishFont    'Squish 8x16 font to 8x8 pixels
-        Case 8: GoSub InvertFont    'Invert pixels
-        Case 9: GoSub BoldFont      'Make Bold
-        Case 10: GoSub ItalicFont   'x Make Italic
-        Case 11: GoSub Underlined   'x Make Underlined
-        Case 12: GoSub Rotate90     'x Rotate 90
-        Case 13: GoSub Rotate180    'x Rotate 180
-        Case 14: GoSub Rotate270    'x Rotate 270
-        Case 15: GoSub MirrorH      'x Mirror Horizontal
-        Case 16: GoSub MirrorV      'x Mirror Vertical
-        Case 17: GoSub DoubleWL     'x Double Wide - Left side
-        Case 18: GoSub DoubleWR     'x Double Wide - Right side
-        Case 19: GoSub DoubleTT     'x Double Tall - Top
-        Case 20: GoSub DoubleTB     'x Double Tall - Bottom
-        Case 21: GoSub DoubleS1     'x Double Size - Top Left
-        Case 22: GoSub DoubleS2     'x Double Size - Top Right
-        Case 23: GoSub DoubleS3     'x Double Size - Bottom Left
-        Case 24: GoSub DoubleS4     'x Doube Size - Bottom Right
+        Case 6: GoSub ExpandFont    'Expand to 8x16 pixels
+        Case 7: GoSub ExpandNon     'Expand non-standard height font to 8 or 16 pixels
+        Case 8: GoSub StretchFont   'Stretch font to 8x16
+        Case 9: GoSub CompactFont   'Compact 8x16 font to 8x8 pixels
+        Case 10: GoSub SquishFont    'Squish 8x16 font to 8x8 pixels
+        Case 11: GoSub InvertFont   'Invert pixels
+        Case 12: GoSub BoldFont     'Make Bold
+        Case 13: GoSub ItalicFont   'Make Italic (not implemented)
+        Case 14: GoSub Underlined   'Make Underlined
+        Case 15: GoSub Rotate90     'Rotate 90
+        Case 16: GoSub Rotate180    'Rotate 180
+        Case 17: GoSub Rotate270    'Rotate 270
+        Case 18: GoSub MirrorH      'Mirror Horizontal
+        Case 19: GoSub MirrorV      'Mirror Vertical
+        Case 20: GoSub DoubleWL     'Double Wide - Left side
+        Case 21: GoSub DoubleWR     'Double Wide - Right side
+        Case 22: GoSub DoubleTT     'Double Tall - Top
+        Case 23: GoSub DoubleTB     'Double Tall - Bottom
+        Case 24: GoSub DoubleS1     'Double Size - Top Left
+        Case 25: GoSub DoubleS2     'Double Size - Top Right
+        Case 26: GoSub DoubleS3     'Double Size - Bottom Left
+        Case 27: GoSub DoubleS4     'Double Size - Bottom Right
     End Select
     StatDone
     
@@ -314,40 +338,29 @@ CombineFiles:
         End If
     Wend
     Return
-
-'----------------------------- Split to Individual Fonts
-' A font is 1024 bytes, containing 128 character of 8 bytes each
-SplitFonts:
-    T = 1024    'Size of chunks
-    GoSub DoSplitting
-    Return
     
-'----------------------------- Split to Font Pairs
-' A font pair is two fonts
-SplitFontPairs:
-    T = 2048
-    GoSub DoSplitting
-    Return
-
-'----------------------------- Split to Font Set
-' A font set is 4 fonts (2 pairs)
-SplitFontSet:
-    T = 4096
-    GoSub DoSplitting
-    Return
     
+'----------------------------- Perform Splitting
+' T specifies the number of characters per group. The specified character size (8 or 16) is used
+' to calculate the number of bytes
 DoSplitting:
     C = 0       'File part counter
-  
-    For k = 1 To FLen / T
-        C = C + 1                                       'next part number
-        Tmp = DstFile & "-" & Format(C) & ".bin"  'build filename
+    NumBytes = T * OptCSize
+            
+    If cbSplitTxt.Value = vbChecked Then Print #FIO2, ";Split File Option - Output filename(s)"
+    
+    For k = 1 To FLen / NumBytes
+        C = C + 1                                 'Next part number
+        Tmp = DstFile & "-" & Format(C) & ".bin"  'Build filename
+        
+        If cbSplitTxt.Value = vbChecked Then Print #FIO2, Tmp 'Write the filename to the output file (text list file)
+        
         FIO3 = FreeFile
         Open Tmp For Output As FIO3
         Stat "Creating " & Tmp
-        
+       
         ' Read Source file, write to new dst file
-        For j = 1 To T
+        For j = 1 To NumBytes
             BChr = Input(1, FIO)
             Print #FIO3, BChr;
         Next j
@@ -368,6 +381,26 @@ ExpandFont:
         Next I
         For I = 1 To OptCSize
             Print #FIO2, Nul; 'expand with blank
+        Next I
+    Next k
+    Return
+
+'----------------------------- Expand Non-CBM Font
+' Converts an 8xN font file (any number of fonts) to 8x8 or 8x16 by padding with blank lines
+' The source file is not 8x8 or 8x16.
+' Example: font is 8x14 (EGA) and you set target as 8x16. Specify "14" in the Option textbox
+'          so the program knows to read 14 bytes at a time from the source file.
+ExpandNon:
+    If OptVal >= OptCSize Then MsgBox "Option must be smaller than target pixel height (8 or 16)": Return
+        
+    For k = 1 To FLen \ OptVal
+        For I = 1 To OptCSize
+            If I <= OptVal Then
+                BChr = Input(1, FIO)    'Read a byte
+                Print #FIO2, BChr;      'Copy a byte
+            Else
+                Print #FIO2, Nul;       'Padd with null
+            End If
         Next I
     Next k
     Return
@@ -720,6 +753,7 @@ End Sub
 
 Private Sub Stat(ByVal txt As String)
     lblStat.Caption = txt
+    DoEvents
 End Sub
 
 Private Sub StatProcessing()
