@@ -67,6 +67,7 @@ These are the operations available from the drop-down menu:
 	* Split to Font.......... 128 Characters
 	* Split to Font Pairs.... 256 Characters
 	* Split to Font Sets..... 512 Characters
+	* Split to Font Sets..... 1024 Characters
 
 * Expand to 8x16 pixels
 	Adds 8 blank rows to expand an 8x8 chr to 8x16.
@@ -200,6 +201,10 @@ Version 1.1 - July 13, 2018
 * Add split to Character and Split to Sub Font (32 characters)
 * Add pad non-cbm fonts (fonts with heights not 8 or 16)
 * Add Create Text file with output filenames for split operations
+
+Version 1.0 - Aug 10, 2015
+-----------
+* Initial Release!
 
 
 Steve
