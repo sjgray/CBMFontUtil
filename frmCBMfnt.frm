@@ -65,7 +65,7 @@ Begin VB.Form frmCBMfnt
       Height          =   315
       ItemData        =   "frmCBMfnt.frx":0000
       Left            =   1200
-      List            =   "frmCBMfnt.frx":0058
+      List            =   "frmCBMfnt.frx":0067
       Style           =   2  'Dropdown List
       TabIndex        =   7
       Top             =   720
@@ -181,7 +181,7 @@ Dim Tran(255)
 Dim CB(15)
 
 Private Sub cmdAbout_Click()
-    MsgBox "CBM Font Utility, V1.1 - July 13/18, (C)2015-2018 Steve J. Gray"
+    MsgBox "CBM Font Utility, V1.2 - July 19/18, (C)2015-2018 Steve J. Gray"
 End Sub
 
 Private Sub Form_Load()
@@ -277,34 +277,40 @@ Private Sub cmdGo_Click()
     '------------------------ Do the requested operation
     Select Case Choice
         Case 0: GoSub CombineFiles      'Combine Fonts or Sets using list file (.txt)
-        Case 1: T = 1:   GoSub DoSplitting  'Split to Characters       (  1 character)
-        Case 2: T = 32:  GoSub DoSplitting  'Split to Sub Fonts        ( 32 characters)
-        Case 3: T = 128: GoSub DoSplitting  'Split to Individual Fonts (128 characters)
-        Case 4: T = 256: GoSub DoSplitting  'Split to Font Pair(s)     (256 characters)
-        Case 5: T = 512: GoSub DoSplitting  'Split to Font Set(s)      (512 characters)
+        Case 1: T = 1:   GoSub DoSplitting  'Split to Characters       (   1 character)
+        Case 2: T = 32:  GoSub DoSplitting  'Split to Sub Fonts        (  32 characters)
+        Case 3: T = 128: GoSub DoSplitting  'Split to Individual Fonts ( 128 characters)
+        Case 4: T = 256: GoSub DoSplitting  'Split to Font Pair(s)     ( 256 characters)
+        Case 5: T = 512: GoSub DoSplitting  'Split to Font Set(s)      ( 512 characters)
+        Case 5: T = 1024: GoSub DoSplitting 'Split to Font Set(s)      (1024 characters)
         
-        Case 6: GoSub ExpandFont    'Expand to 8x16 pixels
-        Case 7: GoSub ExpandNon     'Expand non-standard height font to 8 or 16 pixels
-        Case 8: GoSub StretchFont   'Stretch font to 8x16
-        Case 9: GoSub CompactFont   'Compact 8x16 font to 8x8 pixels
-        Case 10: GoSub SquishFont    'Squish 8x16 font to 8x8 pixels
-        Case 11: GoSub InvertFont   'Invert pixels
-        Case 12: GoSub BoldFont     'Make Bold
-        Case 13: GoSub ItalicFont   'Make Italic (not implemented)
-        Case 14: GoSub Underlined   'Make Underlined
-        Case 15: GoSub Rotate90     'Rotate 90
-        Case 16: GoSub Rotate180    'Rotate 180
-        Case 17: GoSub Rotate270    'Rotate 270
-        Case 18: GoSub MirrorH      'Mirror Horizontal
-        Case 19: GoSub MirrorV      'Mirror Vertical
-        Case 20: GoSub DoubleWL     'Double Wide - Left side
-        Case 21: GoSub DoubleWR     'Double Wide - Right side
-        Case 22: GoSub DoubleTT     'Double Tall - Top
-        Case 23: GoSub DoubleTB     'Double Tall - Bottom
-        Case 24: GoSub DoubleS1     'Double Size - Top Left
-        Case 25: GoSub DoubleS2     'Double Size - Top Right
-        Case 26: GoSub DoubleS3     'Double Size - Bottom Left
-        Case 27: GoSub DoubleS4     'Double Size - Bottom Right
+        Case 7: GoSub ExpandFont    'Expand to 8x16 pixels
+        Case 8: GoSub ExpandNon     'Expand non-standard height font to 8 or 16 pixels
+        Case 9: GoSub StretchFont   'Stretch font to 8x16
+        Case 10: GoSub CompactFont   'Compact 8x16 font to 8x8 pixels
+        Case 11: GoSub SquishFont    'Squish 8x16 font to 8x8 pixels
+        Case 12: GoSub InvertFont   'Invert pixels
+        Case 13: GoSub BoldFont     'Make Bold
+        Case 14: GoSub ItalicFont   'Make Italic (not implemented)
+        Case 15: GoSub Underlined   'Make Underlined
+        Case 16: GoSub Rotate90     'Rotate 90
+        Case 17: GoSub Rotate180    'Rotate 180
+        Case 18: GoSub Rotate270    'Rotate 270
+        Case 19: GoSub MirrorH      'Mirror Horizontal
+        Case 20: GoSub MirrorV      'Mirror Vertical
+        Case 21: GoSub ShiftLeft    'Shift Left  1 pixel (blank pixel on right)
+        Case 22: GoSub ShiftRight   'Shift Right 1 pixel (blank pixel on left)
+        Case 23: GoSub RotateLeft   'Rotate bits Left (left-most pixel goes to end)
+        Case 24: GoSub RotateRight  'Rotate bits Right (right-most pixel goed to beginning)
+        
+        Case 25: GoSub DoubleWL     'Double Wide - Left side
+        Case 26: GoSub DoubleWR     'Double Wide - Right side
+        Case 27: GoSub DoubleTT     'Double Tall - Top
+        Case 28: GoSub DoubleTB     'Double Tall - Bottom
+        Case 29: GoSub DoubleS1     'Double Size - Top Left
+        Case 30: GoSub DoubleS2     'Double Size - Top Right
+        Case 31: GoSub DoubleS3     'Double Size - Bottom Left
+        Case 32: GoSub DoubleS4     'Double Size - Bottom Right
     End Select
     StatDone
     
@@ -577,6 +583,50 @@ MirrorV:
     Next k
     Return
     
+'----------------------------- Shift Pixels Left
+' Shift Pixels LEFT. Blank pixel on RIGHT
+ShiftLeft:
+    For k = 1 To FLen
+        BV = Asc(Input(1, FIO))     'Read a byte
+        BV2 = (BV * 2) Mod 256      'Shift the pixels
+        Print #FIO2, Chr(BV2);      'Write it
+    Next k
+    Return
+
+'----------------------------- Shift Pixels Right
+' Shift Pixels RIGHT. Blank pixel on LEFT
+ShiftRight:
+    For k = 1 To FLen
+        BV = Asc(Input(1, FIO))     'Read a byte
+        BV2 = BV \ 2                'Shift the pixels
+        Print #FIO2, Chr(BV2);      'Write it
+    Next k
+    Return
+    
+    
+'----------------------------- Rotate Pixels Left
+' Rotate Pixels LEFT.
+RotateLeft:
+    For k = 1 To FLen
+        BV = Asc(Input(1, FIO))     'Read a byte
+        BV2 = (BV * 2) Mod 256      'Shift the pixels
+        If BV > 127 Then BV2 = BV2 + 1 'Move opposite end bit
+        Print #FIO2, Chr(BV2);      'Write it
+    Next k
+    Return
+    
+'----------------------------- Rotate Pixels Right
+' Rotate Pixels RIGHT.
+RotateRight:
+    For k = 1 To FLen
+        BV = Asc(Input(1, FIO))     'Read a byte
+        BV2 = BV \ 2                'Shift the pixels
+        If (BV And 1) = 1 Then BV2 = BV2 + 128 'Move the end bit
+        Print #FIO2, Chr(BV2);      'Write it
+    Next k
+    Return
+    
+'================================================================================== Double-Size
 '----------------------------- Double Wide Left
 DoubleWL:
     GoSub Setup2XArray

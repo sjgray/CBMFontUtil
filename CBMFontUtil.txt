@@ -1,4 +1,4 @@
-CBM Font Utility - V1.1, July 13, 2018 - (C)2015-2018 Steve J. Gray
+CBM Font Utility - V1.1, July 19, 2018 - (C)2015-2018 Steve J. Gray
 ================
 
 web....: www.stevegray.ca
@@ -115,6 +115,18 @@ These are the operations available from the drop-down menu:
 * Mirror Vertical
 	Mirror each character on the vertical plane.
 
+* Shift Left 1 Pixel
+	Shifts each character 1 pixel to the Left. Leftmost pixel is lost.
+
+* Shift Right 1 Pixel
+	Shifts each character 1 pixel to the Right. Rightmost pixel is lost.
+
+* Rotate Left 1 Pixel
+	Rotates each character 1 pixel to the Left. Leftmost pixel rotates to right side.
+
+* Rotate Right 1 Pixel
+	Rotates each character 1 pixel to the Right. Rightmost pixel rotates to left side.
+
 * Double Wide - Left side
 	Double wide characters are created using the same symbol, but using two
         different fonts to form one larger character. So for example the letter "A"
@@ -163,6 +175,7 @@ changing the "background colour". For example:
 Double TALL, WIDE and BOTH is planned to be supported in the ColourPET+G firmware.
 IE: Printing will automatically set the correct fontset for each character as required.
 
+
 Bugs and Missing Features
 -------------------------
 
@@ -174,8 +187,16 @@ directory where your source files are located!
 The italic operation is not currently supported.
 
 
-New in Version 1.1
-------------------
+Revision History
+================
+
+Version 1.2 - July 19, 2018
+-----------
+* Add split to Fontset (1024 characters)
+* Add Shift and Rotate 1 pixel Left or Right
+
+Version 1.1 - July 13, 2018
+-----------
 * Add split to Character and Split to Sub Font (32 characters)
 * Add pad non-cbm fonts (fonts with heights not 8 or 16)
 * Add Create Text file with output filenames for split operations
