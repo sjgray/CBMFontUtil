@@ -1,4 +1,4 @@
-CBM Font Utility - V1.1, July 19, 2018 - (C)2015-2018 Steve J. Gray
+CBM Font Utility - V1.2, July 19, 2018 - (C)2015-2018 Steve J. Gray
 ================
 
 web....: www.stevegray.ca
