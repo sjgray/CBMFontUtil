@@ -65,7 +65,7 @@ Begin VB.Form frmCBMfnt
       Height          =   315
       ItemData        =   "frmCBMfnt.frx":0000
       Left            =   1200
-      List            =   "frmCBMfnt.frx":0067
+      List            =   "frmCBMfnt.frx":006D
       Style           =   2  'Dropdown List
       TabIndex        =   7
       Top             =   720
@@ -181,7 +181,7 @@ Dim Tran(255)
 Dim CB(15)
 
 Private Sub cmdAbout_Click()
-    MsgBox "CBM Font Utility, V1.2 - July 19/18, (C)2015-2018 Steve J. Gray"
+    MsgBox "CBM Font Utility, V1.3 - July 20/18, (C)2015-2018 Steve J. Gray"
 End Sub
 
 Private Sub Form_Load()
@@ -197,7 +197,7 @@ Private Sub cmdGo_Click()
     Dim Tr(15) As Integer                                       'translation array
     Dim SBit(7, 7) As Integer, DBit(7, 7) As Integer            'source/dest bit arrays for rotation
     
-    Dim T As Integer                                            'temp integer
+    Dim T As Integer                              'chr count, temp integers
     Dim BV As Integer, BV2 As Integer, BV3 As Integer           'byte values for calculations
     Dim Row As Integer, Col As Integer                          'loop variables - INT
     Dim C As Double, I As Integer, j As Integer                 'loop variables - INT
@@ -282,35 +282,38 @@ Private Sub cmdGo_Click()
         Case 3: T = 128: GoSub DoSplitting  'Split to Individual Fonts ( 128 characters)
         Case 4: T = 256: GoSub DoSplitting  'Split to Font Pair(s)     ( 256 characters)
         Case 5: T = 512: GoSub DoSplitting  'Split to Font Set(s)      ( 512 characters)
-        Case 5: T = 1024: GoSub DoSplitting 'Split to Font Set(s)      (1024 characters)
+        Case 6: T = 1024: GoSub DoSplitting 'Split to Font Set(s)      (1024 characters)
         
-        Case 7: GoSub ExpandFont    'Expand to 8x16 pixels
-        Case 8: GoSub ExpandNon     'Expand non-standard height font to 8 or 16 pixels
-        Case 9: GoSub StretchFont   'Stretch font to 8x16
-        Case 10: GoSub CompactFont   'Compact 8x16 font to 8x8 pixels
-        Case 11: GoSub SquishFont    'Squish 8x16 font to 8x8 pixels
-        Case 12: GoSub InvertFont   'Invert pixels
-        Case 13: GoSub BoldFont     'Make Bold
-        Case 14: GoSub ItalicFont   'Make Italic (not implemented)
-        Case 15: GoSub Underlined   'Make Underlined
-        Case 16: GoSub Rotate90     'Rotate 90
-        Case 17: GoSub Rotate180    'Rotate 180
-        Case 18: GoSub Rotate270    'Rotate 270
-        Case 19: GoSub MirrorH      'Mirror Horizontal
-        Case 20: GoSub MirrorV      'Mirror Vertical
-        Case 21: GoSub ShiftLeft    'Shift Left  1 pixel (blank pixel on right)
-        Case 22: GoSub ShiftRight   'Shift Right 1 pixel (blank pixel on left)
-        Case 23: GoSub RotateLeft   'Rotate bits Left (left-most pixel goes to end)
-        Case 24: GoSub RotateRight  'Rotate bits Right (right-most pixel goed to beginning)
+        Case 7: T = 0: GoSub ExportASM1     'Export to ASM in HEX format
+        Case 8: T = 1: GoSub ExportASM2     'Export to ASM in BINARY
         
-        Case 25: GoSub DoubleWL     'Double Wide - Left side
-        Case 26: GoSub DoubleWR     'Double Wide - Right side
-        Case 27: GoSub DoubleTT     'Double Tall - Top
-        Case 28: GoSub DoubleTB     'Double Tall - Bottom
-        Case 29: GoSub DoubleS1     'Double Size - Top Left
-        Case 30: GoSub DoubleS2     'Double Size - Top Right
-        Case 31: GoSub DoubleS3     'Double Size - Bottom Left
-        Case 32: GoSub DoubleS4     'Double Size - Bottom Right
+        Case 9: GoSub ExpandFont            'Expand to 8x16 pixels
+        Case 10: GoSub ExpandNon            'Expand non-standard height font to 8 or 16 pixels
+        Case 11: GoSub StretchFont          'Stretch font to 8x16
+        Case 12: GoSub CompactFont          'Compact 8x16 font to 8x8 pixels
+        Case 13: GoSub SquishFont           'Squish 8x16 font to 8x8 pixels
+        Case 14: GoSub InvertFont           'Invert pixels
+        Case 15: GoSub BoldFont             'Make Bold
+        Case 16: GoSub ItalicFont           'Make Italic (not implemented)
+        Case 17: GoSub Underlined           'Make Underlined
+        Case 18: GoSub Rotate90             'Rotate 90
+        Case 19: GoSub Rotate180            'Rotate 180
+        Case 20: GoSub Rotate270            'Rotate 270
+        Case 21: GoSub MirrorH              'Mirror Horizontal
+        Case 22: GoSub MirrorV              'Mirror Vertical
+        Case 23: GoSub ShiftLeft            'Shift Left  1 pixel (blank pixel on right)
+        Case 24: GoSub ShiftRight           'Shift Right 1 pixel (blank pixel on left)
+        Case 25: GoSub RotateLeft           'Rotate bits Left (left-most pixel goes to end)
+        Case 26: GoSub RotateRight          'Rotate bits Right (right-most pixel goed to beginning)
+        
+        Case 27: GoSub DoubleWL             'Double Wide - Left side
+        Case 28: GoSub DoubleWR             'Double Wide - Right side
+        Case 29: GoSub DoubleTT             'Double Tall - Top
+        Case 30: GoSub DoubleTB             'Double Tall - Bottom
+        Case 31: GoSub DoubleS1             'Double Size - Top Left
+        Case 32: GoSub DoubleS2             'Double Size - Top Right
+        Case 33: GoSub DoubleS3             'Double Size - Bottom Left
+        Case 34: GoSub DoubleS4             'Double Size - Bottom Right
     End Select
     StatDone
     
@@ -345,7 +348,7 @@ CombineFiles:
     Wend
     Return
     
-    
+'================================================================================== Splitting
 '----------------------------- Perform Splitting
 ' T specifies the number of characters per group. The specified character size (8 or 16) is used
 ' to calculate the number of bytes
@@ -373,7 +376,45 @@ DoSplitting:
         Close FIO3
     Next k
     Return
+
+
+'================================================================================== Export Operations
+'----------------------------- Export to ASM - Hex
+' Format:   .BTYE $xx,$xx,...$xx ;Character NNN $NNN
+ExportASM1:
+    C = 0
+    For k = 1 To FLen \ OptCSize
+        Print #FIO2, ".BYTE";
+        For I = 1 To OptCSize
+            BV = Asc(Input(1, FIO))         'Read a byte
+            Print #FIO2, " $"; Right("00" & Hex(BV), 2);
+        Next I
+        Print #FIO2, " ; Character "; Right("0000" & Format(C), 4); " / $"; Right("000" & Hex(C), 4)
+        C = C + 1
+    Next k
+    Return
+'----------------------------- Export to ASM - Binary
+' Format:   ;Character NNN $NNN
+'           .BTYE %00000000
+'           .BYTE %00000000...
+ExportASM2:
+    C = 0
+    For k = 1 To FLen \ OptCSize
+        Print #FIO2, " ; Character "; Format(C, "###"); " / $"; Right("000" & Hex(C), 4)
+        For I = 1 To OptCSize
+            BV = Asc(Input(1, FIO))         'Read a byte
+            Print #FIO2, ".BYT %";          'Write HEX
+            For a = 7 To 0 Step -1
+                If (BV And 2 ^ a) = 0 Then Print #FIO2, "0"; Else Print #FIO2, "1";
+            Next a
+            Print #FIO2, "  ; "; Right("000" & Format(BV), 3); " / $"; Right("00" & Hex(BV), 2)
+        Next I
+        C = C + 1
+    Next k
+    Return
+
     
+'================================================================================== General Operations
 '----------------------------- Expand Font
 ' Converts an 8x8 font file (any number of fonts) to 8x16 by padding with blank lines
 ExpandFont:
@@ -494,7 +535,8 @@ Underlined:
         Next I
     Next k
     Return
-    
+
+'================================================================================== Rotation
 '----------------------------- Rotated 90 Font
 ' Rotate 90 degrees
 Rotate90:
@@ -552,7 +594,8 @@ Rotate270:
         GoSub WriteChr                          'Write the Dest Bit Array back as bytes
     Next k
     Return
-    
+
+'================================================================================== Mirroring
 '----------------------------- Horizontal Mirror Font
 ' Create Horizontal Mirrored
 MirrorH:
@@ -583,6 +626,7 @@ MirrorV:
     Next k
     Return
     
+'================================================================================== Pixel Shifting
 '----------------------------- Shift Pixels Left
 ' Shift Pixels LEFT. Blank pixel on RIGHT
 ShiftLeft:
@@ -748,6 +792,7 @@ DoubleS4:
     Next k
     Return
 
+'================================================================================== Manipulation Routines
 '----------------------- Translation Array
 SetupMirrorArray:
     Tr(0) = 0: Tr(1) = 8: Tr(2) = 4: Tr(3) = 12
@@ -800,6 +845,8 @@ WriteChr:
     Return
     
 End Sub
+
+'================================================================================== Support Subroutines
 
 Private Sub Stat(ByVal txt As String)
     lblStat.Caption = txt

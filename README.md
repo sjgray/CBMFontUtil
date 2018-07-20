@@ -1,4 +1,4 @@
-CBM Font Utility - V1.2, July 19, 2018 - (C)2015-2018 Steve J. Gray
+CBM Font Utility - V1.3, July 20, 2018 - (C)2015-2018 Steve J. Gray
 ================
 
 web....: www.stevegray.ca
@@ -68,6 +68,10 @@ These are the operations available from the drop-down menu:
 	* Split to Font Pairs.... 256 Characters
 	* Split to Font Sets..... 512 Characters
 	* Split to Font Sets..... 1024 Characters
+
+* Export to ASM...	
+	Creates an assembler .ASM file with .BYTE directives using
+	HEX ($xx) or Binary (%xxxxxxxx) formatted bytes from the source file.
 
 * Expand to 8x16 pixels
 	Adds 8 blank rows to expand an 8x8 chr to 8x16.
@@ -190,6 +194,10 @@ The italic operation is not currently supported.
 
 Revision History
 ================
+
+Version 1.3 - July 20, 2018
+-----------
+* Add ASM export to HEX or BINARY
 
 Version 1.2 - July 19, 2018
 -----------
