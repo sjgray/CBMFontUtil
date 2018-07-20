@@ -9,22 +9,31 @@ Begin VB.Form frmCBMfnt
    LinkTopic       =   "Form1"
    ScaleHeight     =   3090
    ScaleWidth      =   9000
+   Begin VB.TextBox txtASM 
+      Height          =   285
+      Left            =   8220
+      TabIndex        =   18
+      Text            =   "!BYTE"
+      ToolTipText     =   "Operation-specifiic option value"
+      Top             =   1230
+      Width           =   615
+   End
    Begin VB.CheckBox cbSplitTxt 
       Caption         =   "Create TXT file with filenames from Split Operation"
-      Height          =   465
-      Left            =   5850
+      Height          =   375
+      Left            =   3090
       TabIndex        =   16
       Top             =   1170
-      Width           =   2925
+      Width           =   2445
    End
    Begin VB.TextBox txtOptVal 
       Height          =   285
-      Left            =   4560
+      Left            =   8250
       TabIndex        =   13
       Text            =   "0"
       ToolTipText     =   "Operation-specifiic option value"
-      Top             =   1170
-      Width           =   975
+      Top             =   720
+      Width           =   645
    End
    Begin VB.OptionButton optSize 
       Caption         =   "8 x 16 pixel font"
@@ -50,7 +59,7 @@ Begin VB.Form frmCBMfnt
       Height          =   735
       Left            =   5880
       TabIndex        =   9
-      Top             =   1800
+      Top             =   1890
       Width           =   1335
    End
    Begin VB.CommandButton cmdGo 
@@ -58,7 +67,7 @@ Begin VB.Form frmCBMfnt
       Height          =   735
       Left            =   7320
       TabIndex        =   8
-      Top             =   1800
+      Top             =   1890
       Width           =   1575
    End
    Begin VB.ComboBox cboOp 
@@ -69,14 +78,14 @@ Begin VB.Form frmCBMfnt
       Style           =   2  'Dropdown List
       TabIndex        =   7
       Top             =   720
-      Width           =   7545
+      Width           =   6315
    End
    Begin VB.TextBox txtOut 
       Height          =   375
-      Left            =   1200
+      Left            =   1170
       TabIndex        =   3
       ToolTipText     =   "If path is not included file will be written in same directory as source file"
-      Top             =   1800
+      Top             =   1890
       Width           =   4335
    End
    Begin VB.CommandButton cmdBrowse 
@@ -101,6 +110,15 @@ Begin VB.Form frmCBMfnt
       Top             =   240
       Width           =   6975
    End
+   Begin VB.Label Label7 
+      AutoSize        =   -1  'True
+      Caption         =   "ASM:"
+      Height          =   195
+      Left            =   7770
+      TabIndex        =   17
+      Top             =   1290
+      Width           =   390
+   End
    Begin VB.Label lblStat 
       Appearance      =   0  'Flat
       BackColor       =   &H80000018&
@@ -116,9 +134,9 @@ Begin VB.Form frmCBMfnt
       AutoSize        =   -1  'True
       Caption         =   "Option:"
       Height          =   195
-      Left            =   3960
+      Left            =   7680
       TabIndex        =   14
-      Top             =   1200
+      Top             =   780
       Width           =   510
    End
    Begin VB.Label Label5 
@@ -158,7 +176,7 @@ Begin VB.Form frmCBMfnt
       Height          =   195
       Left            =   240
       TabIndex        =   4
-      Top             =   1920
+      Top             =   1980
       Width           =   810
    End
    Begin VB.Label Label1 
@@ -384,7 +402,7 @@ DoSplitting:
 ExportASM1:
     C = 0
     For k = 1 To FLen \ OptCSize
-        Print #FIO2, ".BYTE";
+        Print #FIO2, txtASM.Text;
         For I = 1 To OptCSize
             BV = Asc(Input(1, FIO))         'Read a byte
             Print #FIO2, " $"; Right("00" & Hex(BV), 2);
@@ -402,8 +420,8 @@ ExportASM2:
     For k = 1 To FLen \ OptCSize
         Print #FIO2, " ; Character "; Format(C, "###"); " / $"; Right("000" & Hex(C), 4)
         For I = 1 To OptCSize
-            BV = Asc(Input(1, FIO))         'Read a byte
-            Print #FIO2, ".BYT %";          'Write HEX
+            BV = Asc(Input(1, FIO))             'Read a byte
+            Print #FIO2, txtASM.Text; " %";     'Write HEX
             For a = 7 To 0 Step -1
                 If (BV And 2 ^ a) = 0 Then Print #FIO2, "0"; Else Print #FIO2, "1";
             Next a
